@@ -7,18 +7,18 @@ OLD=$(readlink -f /tmp/nextseq_cronjob/NextSeq500175/*)
 
 NS75=/jumbo/Nextseq500175
 
-ls $NS75 > /tmp/nextseq_cronjob/lsNS75.${DATE}.tmp
-NEW=/tmp/nextseq_cronjob/lsNS75.${DATE}.tmp
+ls $NS75 > /tmp/nextseq_cronjob/NextSeq500175/lsNS75.${DATE}.tmp
+NEW=/tmp/nextseq_cronjob/NextSeq500175/lsNS75.${DATE}.tmp
 
-diff $OLD $NEW > /tmp/nextseq_cronjob/NextSeq500175/differences_$DATE
+diff $OLD $NEW | grep ">" | cut -f 2 -d " " > /tmp/nextseq_cronjob/NextSeq500175/differences_$DATE
 DIFF_FILE=/tmp/nextseq_cronjob/NextSeq500175/differences_$DATE
 DIFFERENCES=$(wc -l /tmp/nextseq_cronjob/NextSeq500175/differences_$DATE | cut -f 1 -d " ")
-
+echo $DIFFERENCES
 if [ $DIFFERENCES > 0 ] ; then
     rm $OLD
     COUNTDIFF=1
-    for i in $DIFFERENCES ; then
-        RUN = $(sed "${COUNTDIFF}q;d" $DIFF_FILE)
+    for i in $DIFFERENCES ; do
+        RUN=$(sed "${COUNTDIFF}q;d" $DIFF_FILE)
 #_______________
 
         #cd /jumbo/WorkingDir/Runs
@@ -33,11 +33,11 @@ if [ $DIFFERENCES > 0 ] ; then
         #time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
 
 
-        echo $RUN > /tmp/nextseq_cronjob/test
+        echo $RUN >> /tmp/nextseq_cronjob/test/test
         COUNTDIFF=$(($COUNTDIFF+1))
 done
-
-
+fi
+#rm $DIFF_FILE
 
 
 
