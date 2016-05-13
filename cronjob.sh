@@ -2,27 +2,25 @@
 
 
 DATE=$(date | sed 's/ /_/g' | sed 's/:/_/'g | cut -d"_" -f-6)
-OLD=$(readlink -f /tmp/nextseq_cronjob/NextSeq500175/*)
-
+OLD=$(readlink -f /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_500175_dirlist/*)
 
 NS75=/jumbo/Nextseq500175
 
-ls $NS75 > /tmp/nextseq_cronjob/NextSeq500175/lsNS75.${DATE}.tmp
-NEW=/tmp/nextseq_cronjob/NextSeq500175/lsNS75.${DATE}.tmp
+ls $NS75 > /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_500175_dirlist/lsNS75.${DATE}.tmp
+NEW=/jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_500175_dirlist/lsNS75.${DATE}.tmp
 
-diff $OLD $NEW | grep ">" | cut -f 2 -d " " > /tmp/nextseq_cronjob/NextSeq500175/differences_$DATE
-DIFF_FILE=/tmp/nextseq_cronjob/NextSeq500175/differences_$DATE
-DIFFERENCES=$(wc -l /tmp/nextseq_cronjob/NextSeq500175/differences_$DATE | cut -f 1 -d " ")
-echo $DIFFERENCES
+DIFF_FILE=/jumbo/apps/misc-scripts/nextseq_cronjob/tmp-files/nextseq_500175/differences_$DATE
+diff $OLD $NEW | grep ">" | cut -f 2 -d " " > $DIFF_FILE
+DIFFERENCES=$(wc -l $DIFF_FILE | cut -f 1 -d " ")
+
 if [ $DIFFERENCES > 0 ] ; then
     rm $OLD
     COUNTDIFF=1
     for i in $(seq 1 $DIFFERENCES) ; do
         RUN=$(sed "${COUNTDIFF}q;d" $DIFF_FILE)
-#_______________
 
         RUNLOC=/jumbo/WorkingDir/Runs
-        mkdir $RUN
+        mkdir ${RUNLOC}/$RUN
 
         module load bcl2fastq/2.17.1.14
 
