@@ -47,3 +47,16 @@ fi
 
 
 #______________
+
+EMAIL=$"""From: \"CLC_Workbench_at_medair\" <CLC.Workbench.noreply@medair.sahlgrenska.gu.se>
+To: \"$USERNAME\" <$EMAIL_ADDRESS>
+Subject: Your CLC job $JOB_NAME has finished!
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Work Complete!
+
+$JOB_NAME finished at `date`
+"""
+
+echo "$EMAIL" | /usr/sbin/sendmail -i -t
