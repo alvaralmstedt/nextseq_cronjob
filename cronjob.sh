@@ -14,24 +14,24 @@ diff $OLD $NEW | grep ">" | cut -f 2 -d " " > $DIFF_FILE
 DIFFERENCES=$(wc -l $DIFF_FILE | cut -f 1 -d " ")
 
 if [ $DIFFERENCES > 0 ] ; then
-    rm $OLD
-    COUNTDIFF=1
+	rm $OLD
+	COUNTDIFF=1
+	cd /jumbo/WorkingDir/Runs
+	
     for i in $(seq 1 $DIFFERENCES) ; do
         RUN=$(sed "${COUNTDIFF}q;d" $DIFF_FILE)
-
-        RUNLOC=/jumbo/tmp/Runs
-        mkdir ${RUNLOC}/$RUN
+        mkdir $RUN
 
         module load bcl2fastq/2.17.1.14
 
-        nohup bcl2fastq  --input-dir /jumbo/Nextseq500175/$RUN -o ${RUNLOC}/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}/${RUN}_nohup.txt
-        cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/${RUN}/.
-        time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl ${RUNLOC}/$RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
-        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD ${RUNLOC}/$RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
+        nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o /jumbo/WorkingDir/Runs/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
+        cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv /jumbo/WorkingDir/Runs/${RUN}/.
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> /jumbo/WorkingDir/Runs/${RUN}_nohup.txt
 
         COUNTDIFF=$(($COUNTDIFF+1))
-        INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
-        EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
+	INITALS=$(grep -e "Investigator Name," /jumbo/WorkingDir/Runs/${RUN}/SampleSheet.csv | cut -f2 -d",")
+        EXPERIMENT_NAME=$(grep -e "Experiment Name," /jumbo/WorkingDir/Runs/${RUN}/SampleSheet.csv | cut -f2 -d",")
         EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
         INVESTIGATOR_NAME=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
         EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
