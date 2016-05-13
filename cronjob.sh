@@ -33,26 +33,20 @@ if [ $DIFFERENCES > 0 ] ; then
 
         COUNTDIFF=$(($COUNTDIFF+1))
 	INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
-	EMAIL=$(grep -e "$INITIALS" /tmp/nextseq_cronjob/investigators.txt | cut -d"|" -f2)
+	EMAIL=$(grep -e "${INITIALS}|" /tmp/nextseq_cronjob/investigators.txt | cut -d"|" -f2)
 
+	EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
+	To: \"$USERNAME\" <$EMAIL_ADDRESS>
+	Subject: Your Sequencing job $JOB_NAME has finished!
+	MIME-Version: 1.0
+	Content-Type: text/plain
 
+	Find data and fastqc-report at: /jumbo/WorkingDir/Runs/${RUN}
 
+	$JOB_NAME finished at `date`
+	"""
 
-#______________
-
-EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
-To: \"$USERNAME\" <$EMAIL_ADDRESS>
-Subject: Your Sequencing job $JOB_NAME has finished!
-MIME-Version: 1.0
-Content-Type: text/plain
-
-Work Complete!
-
-$JOB_NAME finished at `date`
-"""
-
-echo "$EMAIL" | /usr/sbin/sendmail -i -t
-
+	echo "$EMAIL" | /usr/sbin/sendmail -i -t
 
 done
 fi
