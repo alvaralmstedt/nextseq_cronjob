@@ -32,13 +32,8 @@ if [ $DIFFERENCES > 0 ] ; then
         time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
 
         COUNTDIFF=$(($COUNTDIFF+1))
-done
-fi
-rm $DIFF_FILE
-
-grep -e "Investigator Name," SampleSheet.csv | cut -f2- -d","
-
-
+	INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
+	EMAIL=$(grep -e "$INITIALS" /tmp/nextseq_cronjob/investigators.txt | cut -d"|" -f2)
 
 
 
@@ -57,3 +52,9 @@ $JOB_NAME finished at `date`
 """
 
 echo "$EMAIL" | /usr/sbin/sendmail -i -t
+
+
+done
+fi
+rm $DIFF_FILE
+
