@@ -32,7 +32,7 @@ if [ $DIFFERENCES > 0 ] ; then
         time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
 
         COUNTDIFF=$(($COUNTDIFF+1))
-	    INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
+        INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
         EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
         EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /tmp/nextseq_cronjob/investigators.txt | cut -d"|" -f2)
         INVESTIGATOR_NAME=$(grep -e "${INITIALS}|" /tmp/nextseq_cronjob/investigators.txt | cut -d"|" -f3)
@@ -47,7 +47,7 @@ Find data and fastqc-report at: /jumbo/WorkingDir/Runs/${RUN}
 $EXPERIMENT_NAME finished at `date`
 """
 
-	echo "$EMAIL" | /usr/sbin/sendmail -i -t
+    echo "$EMAIL" | /usr/sbin/sendmail -i -t
 
 done
 fi
