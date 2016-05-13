@@ -26,8 +26,8 @@ if [ $DIFFERENCES > 0 ] ; then
 
         nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o ${RUNLOC}/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}/${RUN}_nohup.txt
         cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/${RUN}/.
-        time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
-        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl ${RUNLOC}/$RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD ${RUNLOC}/$RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
 
         COUNTDIFF=$(($COUNTDIFF+1))
         INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
