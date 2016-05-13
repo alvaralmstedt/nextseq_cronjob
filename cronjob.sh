@@ -19,7 +19,7 @@ if [ $DIFFERENCES > 0 ] ; then
     for i in $(seq 1 $DIFFERENCES) ; do
         RUN=$(sed "${COUNTDIFF}q;d" $DIFF_FILE)
 
-        RUNLOC=/jumbo/WorkingDir/Runs
+        RUNLOC=/jumbo/tmp/Runs
         mkdir ${RUNLOC}/$RUN
 
         module load bcl2fastq/2.17.1.14
@@ -27,7 +27,7 @@ if [ $DIFFERENCES > 0 ] ; then
         nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o ${RUNLOC}/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}/${RUN}_nohup.txt
         cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/${RUN}/.
         time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
-        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
 
         COUNTDIFF=$(($COUNTDIFF+1))
         INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
@@ -40,7 +40,7 @@ Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Find data and fastqc-report at: /jumbo/WorkingDir/Runs/${RUN}
+Find data and fastqc-report at: ${RUNLOC}/${RUN}
 
 $EXPERIMENT_NAME finished at `date`
 """
