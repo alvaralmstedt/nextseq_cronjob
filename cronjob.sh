@@ -17,7 +17,7 @@ echo $DIFFERENCES
 if [ $DIFFERENCES > 0 ] ; then
     rm $OLD
     COUNTDIFF=1
-    for i in $DIFFERENCES ; do
+    for i in $(seq 1 $DIFFERENCES) ; do
         RUN=$(sed "${COUNTDIFF}q;d" $DIFF_FILE)
 #_______________
 
