@@ -21,23 +21,20 @@ if [ $DIFFERENCES > 0 ] ; then
         RUN=$(sed "${COUNTDIFF}q;d" $DIFF_FILE)
 #_______________
 
-        #cd /jumbo/WorkingDir/Runs
-        #mkdir $RUN
+        cd /jumbo/WorkingDir/Runs
+        mkdir $RUN
 
+        module load bcl2fastq/2.17.1.14
 
-        #module load bcl2fastq/2.17.1.14
+        nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o /jumbo/WorkingDir/Runs/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
+        cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUN}/.
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
 
-        #nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o /jumbo/WorkingDir/Runs/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
-        #cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUN}/.
-        #time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
-        #time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> /jumbo/WorkingDir/Runs/${RUN}/${RUN}_nohup.txt
-
-
-        echo $RUN >> /tmp/nextseq_cronjob/test/test
         COUNTDIFF=$(($COUNTDIFF+1))
 done
 fi
-#rm $DIFF_FILE
+rm $DIFF_FILE
 
 
 
