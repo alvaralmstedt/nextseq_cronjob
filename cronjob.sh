@@ -40,9 +40,9 @@ if [ $DIFFERENCES > 0 ] ; then
 
 #______________
 
-EMAIL=$"""From: \"CLC_Workbench_at_medair\" <CLC.Workbench.noreply@medair.sahlgrenska.gu.se>
+EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
 To: \"$USERNAME\" <$EMAIL_ADDRESS>
-Subject: Your CLC job $JOB_NAME has finished!
+Subject: Your Sequencing job $JOB_NAME has finished!
 MIME-Version: 1.0
 Content-Type: text/plain
 
