@@ -32,8 +32,8 @@ if [ $DIFFERENCES > 0 ] ; then
         COUNTDIFF=$(($COUNTDIFF+1))
         INITALS=$(grep -e "Investigator Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
         EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/${RUN}/SampleSheet.csv | cut -f2 -d",")
-        EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /tmp/nextseq_cronjob/investigators.txt | cut -d"|" -f2)
-        INVESTIGATOR_NAME=$(grep -e "${INITIALS}|" /tmp/nextseq_cronjob/investigators.txt | cut -d"|" -f3)
+        EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
+        INVESTIGATOR_NAME=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
         EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
 To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
 Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
