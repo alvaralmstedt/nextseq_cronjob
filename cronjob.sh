@@ -34,18 +34,21 @@ then
 		DATALINE=$(cat -n ${TMP_LOC}/old.csv | grep -e "Data" | sed -r 's/ +/ /g' | cut -f1)
 		UPTO=$(($DATALINE-1))
 		sed -n "$DATALINE"',$p' ${TMP_LOC}/old.csv > ${TMP_LOC}/DATA_tmp
-		ILLEGALCHARS=$(echo "?- -(-)-[-]-/-\\-=-+-<->-:-;-\"-'-,-*-^-|-&-.")
+		ILLEGALCHARS=$(echo "?- -(-)-\[-]-\/-\\-=-+-<->-:-;-\"-'-,-*-^-|-&-\.")
 		for k in $(seq 1 22);
 		do
-		CHAR=$(echo $ILLEGALCHARS | cut -f${k})
-		if [ "$CHAR" == "\" ] ;
+		CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
+		if [ "$CHAR" == "\\" ] ;
 		then
 			CHAR=\\\\
 		fi
-		
-		head -n${UPTO} ${TMP_LOC}/old.csv > ${TMP_LOC}/old.csv
-            	
+		sed -i "s/${CHAR}/_/g" ${TMP_LOC}/DATA_tmp
+		done
+		head -n${UPTO} ${TMP_LOC}/old.csv > ${TMP_LOC}/SampleSheet.csv
+            	cat ${TMP_LOC}/DATA_tmp >> ${TMP_LOC}/SampleSheet.csv
+
 		#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
+
 		mkdir $RUN
                 RUNLOC=/jumbo/WorkingDir/Runs
                 module load bcl2fastq/2.17.1.14
