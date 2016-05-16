@@ -24,7 +24,7 @@ then
         
 	#--------CHECK IF SAMPLESHEET EXISTS-------------->
 
-	SHEETCHECK=(ls /jumbo/Nextseq500175/${RUN} | grep -e "SampleSheet.csv)
+	SHEETCHECK=(ls /jumbo/Nextseq500175/${RUN} | grep -e "SampleSheet.csv")
         if [ !-z $SHEETCHECK ] ; 
 	then
 		
@@ -69,7 +69,7 @@ then
 	else
             	EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
                 INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
-		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in $RUN")
+		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in ${RUN}")
 	fi
 	EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
 To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
