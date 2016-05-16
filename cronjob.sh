@@ -24,7 +24,7 @@ then
         
 	#--------CHECK IF SAMPLESHEET EXISTS-------------->
 
-	SHEETCHECK=(ls /jumbo/Nextseq500175/${RUN} | grep -e "SampleSheet.csv)
+	SHEETCHECK=$(ls /jumbo/Nextseq500175/${RUN} | grep -e "SampleSheet.csv)
         if [ !-z $SHEETCHECK ] ; 
 	then
 		
