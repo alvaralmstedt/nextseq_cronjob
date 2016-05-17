@@ -20,22 +20,23 @@ then
 	cd /jumbo/WorkingDir/Runs
 	
     	for i in $(seq 1 $DIFFERENCES) ; do
-        RUN=$(sed "${COUNTDIFF}q;d" $DIFF_FILE)
+        RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE)
         
 	#--------CHECK IF SAMPLESHEET EXISTS-------------->
 
-	SHEETCHECK=$(ls /jumbo/Nextseq500175/${RUN} | grep -e "SampleSheet.csv)
-        if [ !-z $SHEETCHECK ] ; 
+	SHEETCHECK=$(ls /jumbo/Nextseq500175/${RUN} | grep -e "SampleSheet.csv")
+
+        if [ ! -z "$SHEETCHECK" ] ; 
 	then
 		
 		#------------REMOVE ILLEGAL CHARACTERS FROM SAMPLESHEET---------->
 		
 		cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${TMP_LOC}/old.csv
 		DATALINE=$(cat -n ${TMP_LOC}/old.csv | grep -e "Data" | sed -r 's/ +/ /g' | cut -f1)
-		UPTO=$(($DATALINE-1))
-		sed -n "$DATALINE"',$p' ${TMP_LOC}/old.csv > ${TMP_LOC}/DATA_tmp
-		ILLEGALCHARS=$(echo "?- -(-)-\[-]-\/-\\-=-+-<->-:-;-\"-'-,-*-^-|-&-\.")
-		for k in $(seq 1 22);
+		UPTO=$(($DATALINE+1))
+		sed -n "$UPTO"',$p' ${TMP_LOC}/old.csv > ${TMP_LOC}/DATA_tmp
+		ILLEGALCHARS=$(echo "?- -(-)-\[-]-\/-\\-=-+-<->-:-;-\"-'-*-\^-|-&-\.")
+		for k in $(seq 1 21);
 		do
 		CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
 		if [ "$CHAR" == "\\" ] ;
@@ -44,7 +45,7 @@ then
 		fi
 		sed -i "s/${CHAR}/_/g" ${TMP_LOC}/DATA_tmp
 		done
-		head -n${UPTO} ${TMP_LOC}/old.csv > ${TMP_LOC}/SampleSheet.csv
+		head -n${DATALINE} ${TMP_LOC}/old.csv > ${TMP_LOC}/SampleSheet.csv
             	cat ${TMP_LOC}/DATA_tmp >> ${TMP_LOC}/SampleSheet.csv
 
 		#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
@@ -69,7 +70,7 @@ then
 	else
             	EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
                 INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
-		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in $RUN")
+		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in ${RUN}")
 	fi
 	EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
 To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>

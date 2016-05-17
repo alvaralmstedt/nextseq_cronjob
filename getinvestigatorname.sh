@@ -6,6 +6,8 @@ for i in $(seq 1 $NUMDIRS);
 do
 NUM=$(($NUM+1))
 DIR=$(sed "${NUM}q;d" dirlist.tmp)
-grep -e "Investigator Name," $DIR/SampleSheet.csv | cut -d"," -f2 >> investigatorintials
+grep -e "Investigator Name," ${1}$DIR/SampleSheet.csv | cut -d"," -f2 >> investigatorinitials.tmp
 done
+sort -u investigatorinitials.tmp >> investigatorinitials_unique
+rm investigatorinitials.tmp
 rm dirlist.tmp
