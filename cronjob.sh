@@ -47,6 +47,7 @@ then
 		done
 		head -n${DATALINE} ${TMP_LOC}/old.csv > ${TMP_LOC}/SampleSheet.csv
             	cat ${TMP_LOC}/DATA_tmp >> ${TMP_LOC}/SampleSheet.csv
+		cp ${TMP_LOC}/SampleSheet.csv /jumbo/Nextseq500175/${RUN}/.
 
 		#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
 
@@ -56,9 +57,9 @@ then
 
 
 		nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o ${RUNLOC}/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}/${RUN}_nohup.txt
-        	cp ${TMP_LOC}/SampleSheet.csv ${RUNLOC}/${RUN}/.
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN >> ${RUNLOC}/${RUN}/${RUN}_nohup.txt
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN >> ${RUNLOC}/${RUN}_nohup.txt
+		cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/${RUN}/.
+		time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN
+        	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN
 
 		MAILNOTE=$(echo "Find data and fastqc-report at: ${RUNLOC}/${RUN}")
 
