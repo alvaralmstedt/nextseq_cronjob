@@ -112,8 +112,8 @@ then
 
 		#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
 
-		mkdir $RUN
         	RUNLOC=/jumbo/WorkingDir/Runs/${RUN}
+		mkdir $RUNLOC
         	module load bcl2fastq/2.17.1.14
         	module load java
 		checkExit $? "module load"
