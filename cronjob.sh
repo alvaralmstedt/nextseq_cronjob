@@ -109,11 +109,12 @@ then
 		mkdir $RUN
         RUNLOC=/jumbo/WorkingDir/Runs
         module load bcl2fastq/2.17.1.14
-        checkExit $? "module load"
+        module load java
+        checkExit $? "module load bcl2fastq/2.17.1.14"
         
         #Run bcl2fastq
 		nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o ${RUNLOC}/$RUN -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}/${RUN}_nohup.txt
-		checkExit $? ""
+		checkExit $? "bcl2fastq"
         
         #Move sample sheet to run location
         cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/${RUN}/.
