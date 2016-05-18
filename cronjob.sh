@@ -87,8 +87,7 @@ then
             #Loop over each illegal character
             for k in $(seq 1 21);
             do
-            
-            CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
+                CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
                 if [ "$CHAR" == "\\" ] ;
                 then
                     CHAR=\\\\
@@ -98,7 +97,7 @@ then
                 #Replace illegal character with underscore
                 sed -i "s/${CHAR}/_/g" ${TMP_LOC}/DATA_tmp
                 checkExit $? "sed underscores"
-		done
+		    done
 		
         #Put unmodified lines from old shamples sheet to new
         head -n${DATALINE} ${TMP_LOC}/old.csv > ${TMP_LOC}/SampleSheet.csv
@@ -114,35 +113,33 @@ then
 
 		#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
 
-		mkdir $RUN
-<<<<<<< HEAD
-        	RUNLOC=/jumbo/WorkingDir/Runs/${RUN}
-        	module load bcl2fastq/2.17.1.14
-        	module load java
+        RUNLOC=/jumbo/WorkingDir/Runs/${RUN}
+		mkdir $RUNLOC
+        module load bcl2fastq/2.17.1.14
+        module load java
 		checkExit $? "module load"
 
-        	#Run bcl2fastq
+        #Run bcl2fastq
 		nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o ${RUNLOC} -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}_nohup.txt
 		checkExit $? "bcl2fastq"
         
-        	#Move sample sheet to run location
-        	cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/
+        #Move sample sheet to run location
+        cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/
 		checkExit $? "cp samplesheet"
 
-	        #Run NS_FastqMergeQC_3.pl
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUNLOC
-        	checkExit $? "NS_FastMergeQC_3.pl"
+	    #Run NS_FastqMergeQC_3.pl
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUNLOC
+        checkExit $? "NS_FastMergeQC_3.pl"
 
-        	#Run NS_createRunReport_3.pl
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUNLOC
-        	checkExit $? "NS_createRunReport_3.pl"
+        #Run NS_createRunReport_3.pl
+        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUNLOC
+        checkExit $? "NS_createRunReport_3.pl"
 
-        	#Save location of resultfiles to string
-=======
+        #Save location of resultfiles to string
         RUNLOC=/jumbo/WorkingDir/Runs/$RUN
         module load bcl2fastq/2.17.1.14
         module load java
-	checkExit $? "module load"
+	    checkExit $? "module load"
 
         #Run bcl2fastq
 		nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq500175/$RUN -o ${RUNLOC} -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}_nohup.txt
@@ -161,25 +158,16 @@ then
         checkExit $? "NS_createRunReport_3.pl"
 
         #Save location of resultfiles to string
->>>>>>> master
+
 		MAILNOTE=$(echo "Find data and fastqc-report at: ${RUNLOC}")
 
         COUNTDIFF=$(($COUNTDIFF+1))
 		
-<<<<<<< HEAD
-        	#Save initials of the Investigator to string
-       		INITALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
-        
-        	#Save experiment name to string
-        	EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
-=======
-        #Save initials of the Investogator to string
-        INITALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
+        #Save initials of the Investigator to string
+       	INITALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
         
         #Save experiment name to string
-        EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
->>>>>>> master
-        
+        EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")       
         #Fetch email address from file containing list of initials, email adresses and names
         EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
         
