@@ -93,13 +93,12 @@ then
                 then
                     CHAR=\\\\
                 fi
-                checkExit $? "illegalcharacters"
                 
                 #Replace illegal character with underscore
                 sed -i "s/${CHAR}/_/g" ${TMP_LOC}/DATA_tmp
-                checkExit $? "sed underscores"
 		done
-		
+		checkExit $? "illegalcharacters"		
+
         	#Put unmodified lines from old shamples sheet to new
         	head -n${DATALINE} ${TMP_LOC}/old.csv > ${TMP_LOC}/SampleSheet.csv
         	checkExit $? "head old csv"
