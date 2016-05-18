@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-# Print some informative error meassages
+# Print some informative error mesassages
 err() {
         echo "$1 exited unexpectedly";
             exit 1;
