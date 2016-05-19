@@ -127,11 +127,13 @@ then
 		checkExit $? "cp samplesheet"
 
 	        #Run NS_FastqMergeQC_3.pl
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUNLOC
+		cd /jumbo/WorkingDir/Runs/
+        	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN
         	checkExit $? "NS_FastMergeQC_3.pl"
 
         	#Run NS_createRunReport_3.pl
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUNLOC
+		cd $RUNLOC
+        	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN
         	checkExit $? "NS_createRunReport_3.pl"
 
         	#Save location of resultfiles to string
