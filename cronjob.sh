@@ -142,7 +142,7 @@ then
         	COUNTDIFF=$(($COUNTDIFF+1))
 		
         	#Save initials of the Investigator to string
-       		INITALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
+       		INITIALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
         
         	#Save experiment name to string
         	EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
