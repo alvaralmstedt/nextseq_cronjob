@@ -164,10 +164,11 @@ then
         COUNTDIFF=$(($COUNTDIFF+1))
 		
         #Save initials of the Investigator to string
-       	INITALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
+       	INITIALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
         
         #Save experiment name to string
-        EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")       
+        EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
+        
         #Fetch email address from file containing list of initials, email adresses and names
         EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
         
