@@ -149,15 +149,15 @@ then
         cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${RUNLOC}/
 		checkExit $? "cp samplesheet"
 
-        #Run NS_FastqMergeQC_3.pl
-        time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUNLOC
-        checkExit $? "NS_FastMergeQC_3.pl"
+	        #Run NS_FastqMergeQC_3.pl
+		cd /jumbo/WorkingDir/Runs/
+        	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN
+        	checkExit $? "NS_FastMergeQC_3.pl"
 
-        #Run NS_createRunReport_3.pl
-        time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUNLOC
-        checkExit $? "NS_createRunReport_3.pl"
-
-        #Save location of resultfiles to string
+        	#Run NS_createRunReport_3.pl
+		cd $RUNLOC
+        	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN
+        	checkExit $? "NS_createRunReport_3.pl"
 
 		MAILNOTE=$(echo "Find data and fastqc-report at: ${RUNLOC}")
 
