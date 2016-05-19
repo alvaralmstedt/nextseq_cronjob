@@ -24,7 +24,7 @@ OLD=$(readlink -f /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_501351_dirlis
 NS51=/jumbo/Nextseq501351
 
 #Create temporary file list
-ls $NS51 > /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_501351_dirlist/lsNS51.${DATE}.tmp
+ls -d $NS51/*/ > /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_501351_dirlist/lsNS51.${DATE}.tmp
 checkExit $? "ls1"
 
 #New file list
@@ -177,7 +177,7 @@ $EXPERIMENT_NAME finished at `date`
 """
     #Send email
     echo "$EMAIL" | /usr/sbin/sendmail -i -t
-    checkExit $? "sendmail"
+    checkExit $? "sendmail to $EMAIL_ADDRESS"
         done
 fi
 

@@ -24,7 +24,7 @@ OLD=$(readlink -f /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_500175_dirlis
 NS75=/jumbo/Nextseq500175
 
 #Create temporary file list
-ls $NS75/*/ > /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_500175_dirlist/lsNS75.${DATE}.tmp
+ls -d $NS75/*/ > /jumbo/apps/misc-scripts/nextseq_cronjob/nextseq_500175_dirlist/lsNS75.${DATE}.tmp
 checkExit $? "ls1"
 
 #New file list
