@@ -195,7 +195,7 @@ $EXPERIMENT_NAME finished at `date`
 """
     #Send email
     echo "$EMAIL" | /usr/sbin/sendmail -i -t
-    checkExit $? "sendmail"
+    checkExit $? "sendmail to $EMAIL_ADDRESS"
         done
 fi
 
