@@ -196,3 +196,7 @@ fi
 #Remove differences file
 rm ${TMP_LOC}/differences_$DATE
 checkExit $? "rm_differences"
+
+#Keep log filesize in check
+echo "`tail -10000 /jumbo/Nextseq500175/cron_seqdataanalysis.log`" > /jumbo/Nextseq500175/cron_seqdataanalysis.log
+checkExit $? "tail logfile"
