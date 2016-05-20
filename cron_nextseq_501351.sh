@@ -48,7 +48,7 @@ then
 	
 	#For every new directory in the new filelist
 	for i in $(seq 1 $DIFFERENCES) ; do
-	RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE)
+	RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE | cut -d"/" -f4)
 	
 	#Check if run has finished being transferred
 	DSIZE1=0
@@ -152,7 +152,12 @@ then
         
         	#Fetch Investigator name from file containing list of initials, email addresses and names
         	INVESTIGATOR_NAME=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
-        	checkExit $? "grep1"
+		checkExit $? "grep1"
+		
+		#Remove TMPfiles
+        	rm ${TMP_LOC}/SampleSheet${DATE}.csv
+        	rm ${TMP_LOC}/DATA_tmp${DATE}
+        	rm ${TMP_LOC}/old${DATE}.csv
 	else
         	#If no sample sheet is found, these errors will be emailed instead
         	EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
@@ -160,10 +165,6 @@ then
 		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in ${RUN}")
         	checkExit $? "grep2"
 	fi
-	#Remove TMPfiles
-	rm ${TMP_LOC}/SampleSheet${DATE}.csv
-	rm ${TMP_LOC}/DATA_tmp${DATE}
-	rm ${TMP_LOC}/old${DATE}.csv
         #Email to be sent
 	EMAIL=$"""From: \"Nextseq501351\" <Nextseq501351.noreply@medair.sahlgrenska.gu.se>
 To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
