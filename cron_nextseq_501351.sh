@@ -49,14 +49,14 @@ then
 	#For every new directory in the new filelist
 	for i in $(seq 1 $DIFFERENCES) ; do
 	RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE | cut -d"/" -f4)
-
-        #Check if file has CompletionStatus=Completed
-        STATUSCHECK=$(grep -e "CompletedAsPlanned" ${NS51}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
-        while [ "$STATUSCHECK" != "CompletedAsPlanned" ]
-        do
-          	sleep 20m
-                STATUSCHECK=$(grep -e "CompletedAsPlanned" ${NS51}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
-        done
+	
+	#Check if file has CompletionStatus=Completed
+	while [ ${NS75}/${RUN}/RunCompletionStatus.xml == 0 ]
+	do
+        echo "Sequencing job:$RUN detected but still in progress. Waiting for completion signal."
+        sleep 20m
+	done	
+    STATUSCHECK=$(grep -e "<CompletionStatus>" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
 	checkExit $? "While checking status of sequencingjob"
 	
 	#Check if run has finished being transferred
