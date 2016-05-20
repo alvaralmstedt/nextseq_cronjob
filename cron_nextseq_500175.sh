@@ -50,7 +50,7 @@ then
 	for i in $(seq 1 $DIFFERENCES) ; do
 	RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE | cut -d"/" -f4)
 	
-	#Check if file has CompletionStatus=Completed
+	#Check if file has CompletionStatus=Completed 
 	STATUSCHECK=$(grep -e "CompletedAsPlanned" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
 	while [ "$STATUSCHECK" != "CompletedAsPlanned" ]
 	do
