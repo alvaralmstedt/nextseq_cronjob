@@ -50,6 +50,15 @@ then
 	for i in $(seq 1 $DIFFERENCES) ; do
 	RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE | cut -d"/" -f4)
 	
+	#Check if file has CompletionStatus=Completed
+	STATUSCHECK=$(grep -e "CompletedAsPlanned" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
+	while [ "$STATUSCHECK" != "CompletedAsPlanned" ]
+	do
+		sleep 20m
+		STATUSCHECK=$(grep -e "CompletedAsPlanned" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
+	done
+	checkExit $? "While checking status of sequencingjob"
+
 	#Check if run has finished being transferred
 	DSIZE1=0
 	DSIZE2=1
@@ -171,10 +180,12 @@ To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
 Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
 MIME-Version: 1.0
 Content-Type: text/plain
-
+ 
 $MAILNOTE
 
 $EXPERIMENT_NAME finished at `date`
+Your sequencing run was completed with status: $STATUSCHECK
+
 """
     #Send email
     echo "$EMAIL" | /usr/sbin/sendmail -i -t
