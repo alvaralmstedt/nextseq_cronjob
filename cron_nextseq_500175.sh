@@ -51,13 +51,13 @@ then
 	RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE | cut -d"/" -f4)
 	
 	#Check if file has CompletionStatus=Completed
-	STATUSCHECK=$(grep -e "CompletedAsPlanned" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
-	while [ "$STATUSCHECK" != "CompletedAsPlanned" ]
+	while [ ${NS75}/${RUN}/RunCompletionStatus.xml == 0 ]
 	do
-		sleep 20m
-		STATUSCHECK=$(grep -e "CompletedAsPlanned" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
-	done
-	checkExit $? "While checking status of sequencingjob"
+        echo "Sequencing job:$RUN detected but still in progress. Waiting for completion signal."
+        sleep 20m
+	done	
+    STATUSCHECK=$(grep -e "<CompletionStatus>" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
+    checkExit $? "While checking status of sequencingjob"
 
 	#Check if run has finished being transferred
 	DSIZE1=0
