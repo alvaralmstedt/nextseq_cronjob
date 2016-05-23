@@ -93,7 +93,7 @@ then
 	#----------CHECK IF SAMPLESHEET EXISTS-------------->
 	
         SLEEPCOUNT=0
-        while [ ${NS51}/${RUN}/SampleSheet.csv == 0 ] || [ $SLEEPCOUNT < 2001 ]
+        while [ ${NS51}/${RUN}/SampleSheet.csv == 0 ]
         do
         SLEEPCOUNT=$((${SLEEPCOUNT}+1))
         sleep 20m
