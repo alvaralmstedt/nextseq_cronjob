@@ -192,7 +192,9 @@ then
 		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in ${RUN}")
         	checkExit $? "grep2"
 	fi
-        #Email to be sent
+    
+    sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+    #Email to be sent
 #	EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
 #To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
 #Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
