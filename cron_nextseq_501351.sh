@@ -15,6 +15,24 @@ else
 fi
 }
 
+sendMail() {       #Email to be sent
+	EMAIL=$"""From: \"Nextseq501351\" <Nextseq501351.noreply@medair.sahlgrenska.gu.se>
+To: \"$1\" <$2>
+Subject: Your Sequencing job $3 has finished!
+MIME-Version: 1.0
+Content-Type: text/plain
+
+$4
+
+$3 finished at `date`
+Your sequencing run was completed with status: $5
+
+"""
+    #Send email
+    echo "$EMAIL" | /usr/sbin/sendmail -i -t
+    checkExit $? "sendmail to $EMAIL_ADDRESS"
+}
+
 #Format the date output
 DATE=$(date | sed 's/ /_/g' | sed 's/:/_/'g | cut -d"_" -f-6)
 
@@ -174,22 +192,23 @@ then
 		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in ${RUN}")
         	checkExit $? "grep2"
 	fi
-        #Email to be sent
-	EMAIL=$"""From: \"Nextseq501351\" <Nextseq501351.noreply@medair.sahlgrenska.gu.se>
-To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
-Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
-MIME-Version: 1.0
-Content-Type: text/plain
+    sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+    #Email to be sent
+#	EMAIL=$"""From: \"Nextseq501351\" <Nextseq501351.noreply@medair.sahlgrenska.gu.se>
+#To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
+#Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
+#MIME-Version: 1.0
+#Content-Type: text/plain
 
-$MAILNOTE
+#$MAILNOTE
 
-$EXPERIMENT_NAME finished at `date`
-Your sequencing run was completed with status: $STATUSCHECK
+#$EXPERIMENT_NAME finished at `date`
+#Your sequencing run was completed with status: $STATUSCHECK
 
-"""
+#"""
     #Send email
-    echo "$EMAIL" | /usr/sbin/sendmail -i -t
-    checkExit $? "sendmail to $EMAIL_ADDRESS"
+ #   echo "$EMAIL" | /usr/sbin/sendmail -i -t
+ #   checkExit $? "sendmail to $EMAIL_ADDRESS"
         done
 fi
 
