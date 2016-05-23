@@ -56,7 +56,7 @@ then
         echo "Sequencing job:$RUN detected but still in progress. Waiting for completion signal."
         sleep 20m
 	done	
-    STATUSCHECK=$(grep -e "<CompletionStatus>" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
+	STATUSCHECK=$(grep -e "<CompletionStatus>" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
 	checkExit $? "While checking status of sequencingjob"
 	
 	#Check if run has finished being transferred
