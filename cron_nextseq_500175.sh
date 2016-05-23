@@ -213,7 +213,7 @@ then
 	
 	done
 	#-------------------------------MAJOR FOR LOOP FINISHED---------------------------------------------->
-
+fi
 #Remove differences file
 rm ${TMP_LOC}/differences_$DATE
 checkExit $? "rm_differences"
