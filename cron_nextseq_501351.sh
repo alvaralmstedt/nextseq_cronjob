@@ -117,119 +117,104 @@ then
          done
 
 
-		#------------REMOVE ILLEGAL CHARACTERS FROM SAMPLESHEET---------->
-		#Copy the samplesheet to be modified
-            	cp /jumbo/Nextseq501351/${RUN}/SampleSheet.csv ${TMP_LOC}/old${DATE}.csv
-            	checkExit $? "cp samplesheet1"
-           
-           	 #Format space characters
-            	DATALINE=$(cat -n ${TMP_LOC}/old${DATE}.csv | grep -e "Data" | sed -r 's/ +/ /g' | cut -f1)
-            
-            	#Skip column descriptors
-            	UPTO=$(($DATALINE+1))
-            
-            	#Parse out only lines under [Data] from sample sheet
-            	sed -n "$UPTO"',$p' ${TMP_LOC}/old${DATE}.csv > ${TMP_LOC}/DATA_tmp${DATE}
-            	checkExit $? "sed datafield"
-            
-            	#List illegal characters
-            	ILLEGALCHARS=$(echo "?- -(-)-\[-]-\/-\\-=-+-<->-:-;-\"-'-*-\^-|-&-\.")
-            
-            	#Loop over each illegal character
-            	for k in $(seq 1 21);
-            	do
-            
-            	CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
-                if [ "$CHAR" == "\\" ] ;
-                then
-                    CHAR=\\\\
-                fi
-                
-                #Replace illegal character with underscore
-                sed -i "s/${CHAR}/_/g" ${TMP_LOC}/DATA_tmp${DATE}
-		done
-		checkExit $? "illegalcharacters"		
+	#------------REMOVE ILLEGAL CHARACTERS FROM SAMPLESHEET---------->
+	#Copy the samplesheet to be modified
+	cp /jumbo/Nextseq501351/${RUN}/SampleSheet.csv ${TMP_LOC}/old${DATE}.csv
+	checkExit $? "cp samplesheet1"
+   
+	#Format space characters
+	DATALINE=$(cat -n ${TMP_LOC}/old${DATE}.csv | grep -e "Data" | sed -r 's/ +/ /g' | cut -f1)
+    
+	#Skip column descriptors
+	UPTO=$(($DATALINE+1))
+    
+	#Parse out only lines under [Data] from sample sheet
+	sed -n "$UPTO"',$p' ${TMP_LOC}/old${DATE}.csv > ${TMP_LOC}/DATA_tmp${DATE}
+	checkExit $? "sed datafield"
+    
+	#List illegal characters
+	ILLEGALCHARS=$(echo "?- -(-)-\[-]-\/-\\-=-+-<->-:-;-\"-'-*-\^-|-&-\.")
+    
+	#Loop over each illegal character
+	for k in $(seq 1 21);
+	do
+    
+	CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
+	if [ "$CHAR" == "\\" ] ;
+	then
+	    CHAR=\\\\
+	fi
+	
+	#Replace illegal character with underscore
+	sed -i "s/${CHAR}/_/g" ${TMP_LOC}/DATA_tmp${DATE}
+	done
+	checkExit $? "illegalcharacters"		
 
-        	#Put unmodified lines from old shamples sheet to new
-        	head -n${DATALINE} ${TMP_LOC}/old${DATE}.csv > ${TMP_LOC}/SampleSheet${DATE}.csv
-        	checkExit $? "head old csv"
-        
-        	#Append modified lines to new sample sheet
-        	cat ${TMP_LOC}/DATA_tmp${DATE} >> ${TMP_LOC}/SampleSheet${DATE}.csv
-		checkExit $? "cat DATA_tmp"
-        
-        	#Replace old sample sheet with new
-        	cp ${TMP_LOC}/SampleSheet${DATE}.csv /jumbo/Nextseq501351/${RUN}/SampleSheet.csv
-        	checkExit $? "copy samplesheet2"
+	#Put unmodified lines from old shamples sheet to new
+	head -n${DATALINE} ${TMP_LOC}/old${DATE}.csv > ${TMP_LOC}/SampleSheet${DATE}.csv
+	checkExit $? "head old csv"
 
-		#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
+	#Append modified lines to new sample sheet
+	cat ${TMP_LOC}/DATA_tmp${DATE} >> ${TMP_LOC}/SampleSheet${DATE}.csv
+	checkExit $? "cat DATA_tmp"
 
-        	RUNLOC=/jumbo/WorkingDir/Runs/${RUN}
-		mkdir $RUNLOC
-        	module load bcl2fastq/2.17.1.14
-        	module load java
-		checkExit $? "module load"
+	#Replace old sample sheet with new
+	cp ${TMP_LOC}/SampleSheet${DATE}.csv /jumbo/Nextseq501351/${RUN}/SampleSheet.csv
+	checkExit $? "copy samplesheet2"
 
-        	#Run bcl2fastq
-		nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq501351/$RUN -o ${RUNLOC} -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}_nohup.txt
-		checkExit $? "bcl2fastq"
-        
-        	#Move sample sheet to run location
-        	cp /jumbo/Nextseq501351/${RUN}/SampleSheet.csv ${RUNLOC}/
-		checkExit $? "cp samplesheet"
+	#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
 
-	        #Run NS_FastqMergeQC_3.pl
-		cd /jumbo/WorkingDir/Runs/
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN
-        	checkExit $? "NS_FastMergeQC_3.pl"
+	RUNLOC=/jumbo/WorkingDir/Runs/${RUN}
+	mkdir $RUNLOC
+	module load bcl2fastq/2.17.1.14
+	module load java
+	checkExit $? "module load"
 
-        	#Run NS_createRunReport_3.pl
-		cd $RUNLOC
-        	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN
-        	checkExit $? "NS_createRunReport_3.pl"
+	#Run bcl2fastq
+	nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq501351/$RUN -o ${RUNLOC} -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}_nohup.txt
+	checkExit $? "bcl2fastq"
 
-        	#Save location of resultfiles to string
-		MAILNOTE=$(echo "Find data and fastqc-report at: ${RUNLOC}")
+	#Move sample sheet to run location
+	cp /jumbo/Nextseq501351/${RUN}/SampleSheet.csv ${RUNLOC}/
+	checkExit $? "cp samplesheet"
 
-        	COUNTDIFF=$(($COUNTDIFF+1))
-		
-        	#Save initials of the Investigator to string
-       		INITIALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d"," | sed 's/\r//')
-        
-        	#Save experiment name to string
-        	EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
-        
-        	#Fetch email address from file containing list of initials, email adresses and names
-        	EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
-        
-        	#Fetch Investigator name from file containing list of initials, email addresses and names
-        	INVESTIGATOR_NAME=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
-		checkExit $? "grep1"
-		
-		#Remove TMPfiles
-        	rm ${TMP_LOC}/SampleSheet${DATE}.csv
-        	rm ${TMP_LOC}/DATA_tmp${DATE}
-        	rm ${TMP_LOC}/old${DATE}.csv
+	#Run NS_FastqMergeQC_3.pl
+	cd /jumbo/WorkingDir/Runs/
+	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN
+	checkExit $? "NS_FastMergeQC_3.pl"
 
-    sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
-    #Email to be sent
-#	EMAIL=$"""From: \"Nextseq501351\" <Nextseq501351.noreply@medair.sahlgrenska.gu.se>
-#To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
-#Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
-#MIME-Version: 1.0
-#Content-Type: text/plain
+	#Run NS_createRunReport_3.pl
+	cd $RUNLOC
+	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN
+	checkExit $? "NS_createRunReport_3.pl"
 
-#$MAILNOTE
+	#Save location of resultfiles to string
+	MAILNOTE=$(echo "Find data and fastqc-report at: ${RUNLOC}")
 
-#$EXPERIMENT_NAME finished at `date`
-#Your sequencing run was completed with status: $STATUSCHECK
+	COUNTDIFF=$(($COUNTDIFF+1))
+	
+	#Save initials of the Investigator to string
+	INITIALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d"," | sed 's/\r//')
 
-#"""
-    #Send email
- #   echo "$EMAIL" | /usr/sbin/sendmail -i -t
- #   checkExit $? "sendmail to $EMAIL_ADDRESS"
-        done
-fi
+	#Save experiment name to string
+	EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
+
+	#Fetch email address from file containing list of initials, email adresses and names
+	EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
+
+	#Fetch Investigator name from file containing list of initials, email addresses and names
+	INVESTIGATOR_NAME=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
+	checkExit $? "grep1"
+	
+	#Remove TMPfiles
+	rm ${TMP_LOC}/SampleSheet${DATE}.csv
+	rm ${TMP_LOC}/DATA_tmp${DATE}
+	rm ${TMP_LOC}/old${DATE}.csv
+
+    	sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+    
+	done
+	#-------------------------------MAJOR FOR LOOP FINISHED---------------------------------------------->
 
 #Remove differences file
 rm ${TMP_LOC}/differences_$DATE
