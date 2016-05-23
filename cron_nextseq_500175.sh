@@ -57,7 +57,7 @@ then
         sleep 20m
 	done	
     	STATUSCHECK=$(grep -e "<CompletionStatus>" ${NS75}/${RUN}/RunCompletionStatus.xml | cut -d">" -f2 | cut -d"<" -f1)
-    	checkExit $? "While checking status of sequencingjob"
+    	checkExit $? "While checking status of sequencingjob ${RUN}"
 
 	#Check if run has finished being transferred
 	DSIZE1=0
@@ -65,22 +65,44 @@ then
 	while [ $DSIZE1 != $DSIZE2 ]
 	do
 		DSIZE1=$(du -s ${NS75}/${RUN} | cut -f1)
-		sleep 5m
+		sleep 10m
 		DSIZE2=$(du -s	${NS75}/${RUN} | cut -f1)
 	done
-        checkExit $? "While dirsize check"
+        checkExit $? "While dirsize check ${RUN}"
+	
 	#----------CHECK IF SAMPLESHEET EXISTS-------------->
 	
-	SHEETCHECK=$(ls /jumbo/Nextseq500175/${RUN} | grep -e "SampleSheet.csv")
-	if [ ! -z "$SHEETCHECK" ] ; 
-	then
-		#------------REMOVE ILLEGAL CHARACTERS FROM SAMPLESHEET---------->
-		#Copy the samplesheet to be modified
-            	cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${TMP_LOC}/old${DATE}.csv
+	SLEEPCOUNT=0
+	while [ ${NS75}/${RUN}/SampleSheet.csv == 0 ] || [ $SLEEPCOUNT < 2001 ]
+	do
+		SLEEPCOUNT=$((${SLEEPCOUNT}+1))
+		sleep 20m
+		if [ $SLEEPCOUNT == 100 ] ;
+		then
+			MAILNOTE=$(echo "Warning: Your run seems to have completed but no SampleSheet.csv was found in: /jumbo/Nextseq500175/${RUN}, you have 27,777 days to provide a correctly formatted SampleSheet.csv. After that bcl2fastq and fastqc has to be run manually"  
+			EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
+	                INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
+			EXPERIMENT_NAME=$(echo "Unknown")
+			sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+			checkExit $? "While looking for SampleSheet.csv ${RUN} for 2000m"
+		fi
+		checkExit $? "While looking for SampleSheet.csv ${RUN} every 20min x ${SLEEPCOUNT} times"
+		if [ $SLEEPCOUNT == 2000 ] ;
+		then
+            		MAILNOTE=$(echo "Warning: Automatic bcl2fastq and fastqc of data in run: $RUN was abandoned after 27 days due to reason: No SampleSheet.cs$
+                	sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+                	checkExit $? "While looking for SampleSheet.csv ${RUN} for 27 days - now abandoned"
+			exit
+        	fi
+	done
+
+
+	#------------REMOVE ILLEGAL CHARACTERS FROM SAMPLESHEET---------->
+	#Copy the samplesheet to be modified
+        cp /jumbo/Nextseq500175/${RUN}/SampleSheet.csv ${TMP_LOC}/old${DATE}.csv
             	checkExit $? "cp samplesheet1"
-           
-           	 #Format space characters
-            	DATALINE=$(cat -n ${TMP_LOC}/old${DATE}.csv | grep -e "Data" | sed -r 's/ +/ /g' | cut -f1)
+        #Format space characters
+        DATALINE=$(cat -n ${TMP_LOC}/old${DATE}.csv | grep -e "Data" | sed -r 's/ +/ /g' | cut -f1)
             
             	#Skip column descriptors
             	UPTO=$(($DATALINE+1))
@@ -167,13 +189,6 @@ then
         	rm ${TMP_LOC}/DATA_tmp${DATE}
        		rm ${TMP_LOC}/old${DATE}.csv
 
-	else
-        	#If no sample sheet is found, these errors will be emailed instead
-        	EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
-        	INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
-		MAILNOTE=$(echo "Error: Bcl2fastq and FastQC did not run - no SampleSheet.csv in ${RUN}")
-        	checkExit $? "grep2"
-	fi
         #Email to be sent
 	EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
 To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
