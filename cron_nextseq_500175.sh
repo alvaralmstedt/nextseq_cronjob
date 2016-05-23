@@ -15,6 +15,24 @@ else
 fi
 }
 
+sendMail() {
+EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
+To: \"$1\" <$2>
+Subject: Your Sequencing job $3 has finished!
+MIME-Version: 1.0
+Content-Type: text/plain
+ 
+$4
+
+$3 finished at `date`
+Your sequencing run was completed with status: $5
+
+"""
+    #Send email
+    echo "$EMAIL" | /usr/sbin/sendmail -i -t
+    checkExit $? "sendmail to $EMAIL_ADDRESS"
+}
+
 #Format the date output
 DATE=$(date | sed 's/ /_/g' | sed 's/:/_/'g | cut -d"_" -f-6)
 
@@ -190,23 +208,23 @@ then
        		rm ${TMP_LOC}/old${DATE}.csv
 
         #Email to be sent
-	EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
-To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
-Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
-MIME-Version: 1.0
-Content-Type: text/plain
+#	EMAIL=$"""From: \"NextSeq500175\" <NextSeq500175.noreply@medair.sahlgrenska.gu.se>
+#To: \"$INVESTIGATOR_NAME\" <$EMAIL_ADDRESS>
+#Subject: Your Sequencing job $EXPERIMENT_NAME has finished!
+#MIME-Version: 1.0
+#Content-Type: text/plain
  
-$MAILNOTE
+#$MAILNOTE
 
-$EXPERIMENT_NAME finished at `date`
-Your sequencing run was completed with status: $STATUSCHECK
+# $EXPERIMENT_NAME finished at `date`
+# Your sequencing run was completed with status: $STATUSCHECK
 
-"""
-    #Send email
-    echo "$EMAIL" | /usr/sbin/sendmail -i -t
-    checkExit $? "sendmail to $EMAIL_ADDRESS"
-        done
-fi
+#"""
+#    #Send email
+#    echo "$EMAIL" | /usr/sbin/sendmail -i -t
+#    checkExit $? "sendmail to $EMAIL_ADDRESS"
+#        done
+#fi
 
 #Remove differences file
 rm ${TMP_LOC}/differences_$DATE
