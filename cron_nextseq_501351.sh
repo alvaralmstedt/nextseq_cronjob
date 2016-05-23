@@ -172,7 +172,8 @@ then
 	checkExit $? "module load"
 
 	#Run bcl2fastq
-	nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq501351/$RUN -o ${RUNLOC} -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}_nohup.txt
+	nohup bcl2fastq  --runfolder-dir /jumbo/Nextseq501351/$RUN -o ${RUNLOC} -r4 -p4 -d4 -w4 --barcode-mismatches 1 --no-lane-splitting --min-log-level TRACE > ${RUNLOC}/${RUN}_nohup.txt 2>&1 ${RUNLOC}/${RUN}_bcl2fastq.log
+
 	checkExit $? "bcl2fastq"
 
 	#Move sample sheet to run location
@@ -181,12 +182,13 @@ then
 
 	#Run NS_FastqMergeQC_3.pl
 	cd /jumbo/WorkingDir/Runs/
-	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN
+	time /jumbo/WorkingDir/Programs/NextSeq/NS_FastqMergeQC_3.pl $RUN 2>&1 ${RUNLOC}/${RUN}_fqmerge.log
 	checkExit $? "NS_FastMergeQC_3.pl"
 
 	#Run NS_createRunReport_3.pl
 	cd $RUNLOC
-	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN
+	time /jumbo/WorkingDir/Programs/NextSeq/NS_createRunReport_3.pl MD $RUN 2>&1 ./${RUN}_createrunreport.log
+
 	checkExit $? "NS_createRunReport_3.pl"
 
 	#Save location of resultfiles to string
