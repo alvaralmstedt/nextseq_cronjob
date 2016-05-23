@@ -112,6 +112,7 @@ then
                 MAILNOTE=$(echo "Warning: Automatic bcl2fastq and fastqc of data in run: $RUN was abandoned after 27 days due to reason: No SampleSheet.csv")
                 sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
                 checkExit $? "While looking for SampleSheet.csv ${RUN} for 27 days - now abandoned"
+		rm ${TMP_LOC}/differences_$DATE
                	exit
        	 fi
          done
