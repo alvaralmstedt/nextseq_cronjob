@@ -103,14 +103,14 @@ then
         	EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
         	INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
         	EXPERIMENT_NAME=$(echo "Unknown")
-        	sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+        	sendMail "${INVESTIGATOR_NAME}" "${EMAIL_ADDRESS}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
         	checkExit $? "While looking for SampleSheet.csv ${RUN} for 2000m"
          fi
          checkExit $? "While looking for SampleSheet.csv ${RUN} every 20min x ${SLEEPCOUNT} times"
          if [ $SLEEPCOUNT == 2000 ] ;
          then
          	MAILNOTE=$(echo "Warning: Automatic bcl2fastq and fastqc of data in run: $RUN was abandoned after 27 days due to reason: No SampleSheet.csv")
-        	sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+        	sendMail "${INVESTIGATOR_NAME}" "${EMAIL_ADDRESS}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
         	checkExit $? "While looking for SampleSheet.csv ${RUN} for 27 days - now abandoned"
         	rm ${TMP_LOC}/differences_$DATE
 		exit
@@ -214,7 +214,7 @@ then
 	rm ${TMP_LOC}/DATA_tmp${DATE}
 	rm ${TMP_LOC}/old${DATE}.csv
 
-    	sendMail $INVESTIGATOR_NAME $EMAIL_ADDRESS $EXPERIMENT_NAME $MAILNOTE $STATUSCHECK
+    	sendMail "${INVESTIGATOR_NAME}" "${EMAIL_ADDRESS}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
     
 	done
 	#-------------------------------MAJOR FOR LOOP FINISHED---------------------------------------------->
