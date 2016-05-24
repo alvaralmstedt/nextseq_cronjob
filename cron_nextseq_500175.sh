@@ -71,7 +71,7 @@ then
 	RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE | cut -d"/" -f4)
 	
 	#Check if file has CompletionStatus=Completed
-	while [ ${NS75}/${RUN}/RunCompletionStatus.xml == 0 ]
+	while [ ! -f ${NS75}/${RUN}/RunCompletionStatus.xml ]
 	do
         echo "Sequencing job:$RUN detected but still in progress. Waiting for completion signal."
         sleep 20m
@@ -93,7 +93,7 @@ then
 	#----------CHECK IF SAMPLESHEET EXISTS-------------->
 	
 	SLEEPCOUNT=0
-	while [ ${NS75}/${RUN}/SampleSheet.csv == 0 ]
+	while [ ! -f ${NS75}/${RUN}/SampleSheet.csv ]
 	do
   	SLEEPCOUNT=$((${SLEEPCOUNT}+1))
         sleep 20m
