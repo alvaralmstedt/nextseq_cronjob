@@ -1,4 +1,4 @@
-̈́#!/bin/bash -l
+#!/bin/bash -l
 
 # Print some informative error messages
 err() {
