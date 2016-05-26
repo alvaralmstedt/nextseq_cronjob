@@ -33,6 +33,20 @@ Your sequencing run was completed with status: $5
     checkExit $? "sendmail to $EMAIL_ADDRESS"
 }
 
+muttMail () {
+    MAIL=$"""
+    
+    $4
+
+    $1 finished at `date`
+    Your sequencing run was completed with status: $5
+
+    """
+echo "$MAIL" | mutt -s "$1" -e "my_hdr From: NextSeq501351 <NextSeq501351.noreply@medair.sahlgrenska.gu.se>" -a $2 -- "$6 <$3>"
+
+}
+
+
 #Format the date output
 DATE=$(date | sed 's/ /_/g' | sed 's/:/_/'g | cut -d"_" -f-6)
 
@@ -213,9 +227,8 @@ then
 	rm ${TMP_LOC}/SampleSheet${DATE}.csv
 	rm ${TMP_LOC}/DATA_tmp${DATE}
 	rm ${TMP_LOC}/old${DATE}.csv
-
-    	sendMail "${INVESTIGATOR_NAME}" "${EMAIL_ADDRESS}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
     
+    muttMail "${EXPERIMENT_NAME}" "${RUNLOC}/${RUN}.xlsx" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"
 	done
 	#-------------------------------MAJOR FOR LOOP FINISHED---------------------------------------------->
 fi
