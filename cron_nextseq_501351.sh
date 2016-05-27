@@ -205,9 +205,6 @@ then
 
 	checkExit $? "NS_createRunReport_3.pl"
 
-	#Save location of resultfiles to string
-	MAILNOTE=$(echo "Find data and fastqc-report at: ${RUNLOC}")
-
 	COUNTDIFF=$(($COUNTDIFF+1))
 	
 	#Save initials of the Investigator to string
@@ -227,10 +224,32 @@ then
 	rm ${TMP_LOC}/SampleSheet${DATE}.csv
 	rm ${TMP_LOC}/DATA_tmp${DATE}
 	rm ${TMP_LOC}/old${DATE}.csv
-    
-    muttMail "${EXPERIMENT_NAME}" "${RUNLOC}/${RUN}.xlsx" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"	
-    checkExit $? "muttMail sent to ${INVESTIGATOR_NAME} regarding experiment: ${EXPERIMENT_NAME}"
-    done
+    	
+	#Get project name from experimentname and check if project-dir exists in WorkingDir
+        PROJECT=$(echo "$EXPERIMENT_NAME" | cut -d"_" -f1)
+        ls /jumbo/WorkingDir > ${TMP_LOC}/workingdir_dirlist.tmp
+        PROJECTDIR=$(grep -e "$PROJECT" ${TMP_LOC}/workingdir_dirlist.tmp)
+        if [ -z $PROJECTDIR ] ;
+        then
+                MAILNOTE=$(echo "Warning: No directory in /jumbo/WorkingDir containing the string: ${PROJECT}, files not transferred")
+        	INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
+		sendMail "${INVESTIGATOR_NAME}" "${EMAIL_ADDRESS}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
+                checkExit $? "Could not find project dir: ${PROJECT} in /jumbo/WorkingDir"
+		exit
+        fi
+        SAVELOC=$(echo "/jumbo/WorkingDir/$PROJECTDIR/shared/")
+        rm ${TMP_LOC}/workingdir_dirlist.tmp
+        
+        #Move fastq fastqc and multiqc-report to /jumbo/WorkingDir/Projectname/Shared/Runname
+        mv ${RUNLOC}/${PROJECT}/* $SAVELOC
+	checkExit $? "Moved ${RUNLOC}/${PROJECT}/* to ${SAVELOC}"
+	
+	#Save location of resultfiles to string
+        MAILNOTE=$(echo "Find reports at: ${RUNLOC}, Fastq, Fastqc and multiqc_report moved to ${SAVELOC}")
+
+    	muttMail "${EXPERIMENT_NAME}" "${RUNLOC}/${RUN}.xlsx" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"	
+    	checkExit $? "muttMail sent to ${INVESTIGATOR_NAME} regarding experiment: ${EXPERIMENT_NAME}"
+    	done
 	#-------------------------------MAJOR FOR LOOP FINISHED---------------------------------------------->
 fi
 
