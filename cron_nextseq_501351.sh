@@ -228,8 +228,9 @@ then
 	rm ${TMP_LOC}/DATA_tmp${DATE}
 	rm ${TMP_LOC}/old${DATE}.csv
     
-    muttMail "${EXPERIMENT_NAME}" "${RUNLOC}/${RUN}.xlsx" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"
-	done
+    muttMail "${EXPERIMENT_NAME}" "${RUNLOC}/${RUN}.xlsx" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"	
+    checkExit $? "muttMail sent to ${INVESTIGATOR_NAME} regarding experiment: ${EXPERIMENT_NAME}"
+    done
 	#-------------------------------MAJOR FOR LOOP FINISHED---------------------------------------------->
 fi
 
