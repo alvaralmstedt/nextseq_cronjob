@@ -145,20 +145,28 @@ then
         checkExit $? "sed datafield"
             
         #List illegal characters
-        ILLEGALCHARS=$(echo "?- -(-)-\[-]-\/-\\-=-+-<->-:-;-\"-'-*-\^-|-&-\.")
+        ILLEGALCHARS=$(echo "?- -(-)-\[-]-\/-\\-=-+-<->-:-;-\"-'-*-\^-|-&-\.-å-ä-ö")
     
 	#Loop over each illegal character
-	for k in $(seq 1 21);
+	for k in $(seq 1 24);
 	do
-    
+	REPLACE=$(echo "_")    
 	CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
 	if [ "$CHAR" == "\\" ] ;
 	then
-	    CHAR=\\\\
+		CHAR=\\\\
 	fi
+	if [ "$CHAR" == "å" ] || [ "$CHAR" == "ä" ] ;
+	then
+		REPLACE=$(echo "a")
+	fi
+		if [ "$CHAR" == "ö" ] ;
+        then
+                REPLACE=$(echo "o")
+        fi
 	
 	#Replace illegal character with underscore
-	sed -i "s/${CHAR}/_/g" ${TMP_LOC}/DATA_tmp${DATE}
+	sed -i "s/${CHAR}/${REPLACE}/g" ${TMP_LOC}/DATA_tmp${DATE}
 	done
 	checkExit $? "illegalcharacters"		
 
