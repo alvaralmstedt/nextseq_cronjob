@@ -175,11 +175,11 @@ then
 	checkExit $? "head old csv"
 
 	#Append modified lines to new sample sheet
-	cat ${TMP_LOC}/DATA_tmp${DATE} >> ${TMP_LOC}/SampleSheet.csv
+	cat ${TMP_LOC}/DATA_tmp${DATE} >> ${TMP_LOC}/SampleSheet${DATE}.csv
 	checkExit $? "cat DATA_tmp"
 
 	#Replace old sample sheet with new
-	cp ${TMP_LOC}/SampleSheet${DATE}.csv /jumbo/Nextseq500175/${RUN}/
+	cp ${TMP_LOC}/SampleSheet${DATE}.csv /jumbo/Nextseq500175/${RUN}/SampleSheet.csv
 	checkExit $? "copy samplesheet2"
 
 	#-------------------RUN BCL2FASTQ AND FASTQC-------------------->
