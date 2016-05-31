@@ -155,15 +155,15 @@ then
 	do
 	REPLACE=$(echo "_")
 	CHAR=$(echo $ILLEGALCHARS | cut -d"-" -f${k})
-	if [ "$CHAR" == "\\" ] ;
+	if [ "$CHAR" = "\\" ] ;
 	then
 	    CHAR=\\\\
 	fi
-		if [ "$CHAR" == "å" ] || [ "$CHAR" == "ä" ] ;
+		if [ "$CHAR" = "å" ] || [ "$CHAR" = "ä" ] ;
         then
             	REPLACE=$(echo "a")
         fi
-          	if [ "$CHAR" == "ö" ] ;
+          	if [ "$CHAR" = "ö" ] ;
         then
             	REPLACE=$(echo "o")
         fi
