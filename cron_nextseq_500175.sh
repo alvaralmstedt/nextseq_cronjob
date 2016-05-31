@@ -214,7 +214,7 @@ then
 	INITIALS=$(grep -e "Investigator Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d"," | sed 's/\r//')
 
 	#Save experiment name to string
-        EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d",")
+        EXPERIMENT_NAME=$(grep -e "Experiment Name," ${RUNLOC}/SampleSheet.csv | cut -f2 -d"," | sed 's/\r//')
 
 	#Fetch email address from file containing list of initials, email adresses and names
 	EMAIL_ADDRESS=$(grep -e "${INITIALS}|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
@@ -235,6 +235,7 @@ then
         then
             	MAILNOTE=$(echo "Warning: No directory in /jumbo/WorkingDir containing the string: ${PROJECT}, files not transferred")
         	INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
+		EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
 		sendMail "${INVESTIGATOR_NAME}" "${EMAIL_ADDRESS}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
 		checkExit $? "Could not find project dir: ${PROJECT} in /jumbo/WorkingDir"
 		exit
