@@ -249,8 +249,10 @@ then
                 checkExit $? "Could not find project dir: ${PROJECT} in /jumbo/WorkingDir"
 		exit
         fi
-        SAVELOC=$(echo "/jumbo/WorkingDir/$PROJECTDIR/shared/")
+        SAVELOC=$(echo "/jumbo/WorkingDir/$PROJECTDIR/shared/${RUN}")
+	mkdir $SAVELOC
         rm ${TMP_LOC}/workingdir_dirlist.tmp
+
         
         #Move fastq fastqc and multiqc-report to /jumbo/WorkingDir/Projectname/Shared/Runname
         mv ${RUNLOC}/${PROJECT}/* $SAVELOC
