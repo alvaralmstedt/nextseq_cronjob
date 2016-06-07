@@ -117,8 +117,11 @@ then
         	EMAIL_ADDRESS=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
         	INVESTIGATOR_NAME=$(grep -e "ADMIN|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
         	EXPERIMENT_NAME=$(echo "Unknown")
+		INVESTIGATOR_NAME2=$(grep -e "Genomics|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f3)
+                EMAIL_ADDRESS2=$(grep -e "Genomics|" /jumbo/apps/misc-scripts/nextseq_cronjob/investigators/investigators.txt | cut -d"|" -f2)
         	sendMail "${INVESTIGATOR_NAME}" "${EMAIL_ADDRESS}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
-        	checkExit $? "While looking for SampleSheet.csv ${RUN} for 2000m"
+        	sendMail "${INVESTIGATOR_NAME2}" "${EMAIL_ADDRESS2}" "${EXPERIMENT_NAME}" "${MAILNOTE}" "${STATUSCHECK}"
+		checkExit $? "While looking for SampleSheet.csv ${RUN} for 2000m"
          fi
          checkExit $? "While looking for SampleSheet.csv ${RUN} every 20min x ${SLEEPCOUNT} times"
          if [ $SLEEPCOUNT == 2000 ] ;
