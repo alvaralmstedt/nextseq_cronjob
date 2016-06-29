@@ -188,6 +188,14 @@ then
 	cat ${TMP_LOC}/DATA_tmp${DATE} >> ${TMP_LOC}/SampleSheet${DATE}.csv
 	checkExit $? "cat DATA_tmp"
 
+	#Remove potential excess ","
+	ROWSTOKEEP=$(cat -n ${TMP_LOC}/SampleSheet${DATE}.csv | grep -e ",,,,,," | grep -e "\[Data\]" -A1 | sed "2q;d" | sed 's/^ *//' | cut -f1)
+	if [ ! -z "$ROWSTOKEEP" ] ;
+	then
+		ROWSTOKEEP=$((${ROWSTOKEEP}-1))
+		echo "`head -n $ROWSTOKEEP ${TMP_LOC}/SampleSheet${DATE}.csv | cut -d"," -f-10`" > ${TMP_LOC}/SampleSheet${DATE}.csv
+	fi
+	
 	#Replace old sample sheet with new
 	cp ${TMP_LOC}/SampleSheet${DATE}.csv  ${M2776}/${RUN}/SampleSheet.csv
 	checkExit $? "copy samplesheet2"
