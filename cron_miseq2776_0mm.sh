@@ -112,6 +112,7 @@ then
 	
 	if [ "${INITIALS}" != "EM" ] ;
 	then
+		checkExit $? "Investigator in ${RUN} is not EM, ignoring run."
 		continue
 	fi	
 		
@@ -141,7 +142,7 @@ then
 	#------------REMOVE ILLEGAL CHARACTERS FROM SAMPLESHEET---------->
 	
 	#Copy the samplesheet to be modified
-        cp ${M2776}/${RUN}/SampleSheet.csv ${TMP_LOC}/old${DATE}.csv
+        cp -R ${M2776}/${RUN}/SampleSheet.csv ${TMP_LOC}/old${DATE}.csv
         checkExit $? "cp samplesheet1"
         #Format space characters
         DATALINE=$(cat -n ${TMP_LOC}/old${DATE}.csv | grep -e "Data" | sed -r 's/ +/ /g' | cut -f1)
@@ -191,14 +192,17 @@ then
 	cp ${TMP_LOC}/SampleSheet${DATE}.csv  ${M2776}/${RUN}/SampleSheet.csv
 	checkExit $? "copy samplesheet2"
 
-	#-------------------MOVE RUN TO /jumbo/WorkingDir/B16-058/shared------------>
+	#-------------------MOVE RUN TO /jumbo/WorkingDir/B16-058/------------>
 	
-	RUNLOC=/jumbo/WorkingDir/B16-058/shared/${RUN}/Data/Intensities/BaseCalls
-	mv ${M2776}/${RUN} /jumbo/WorkingDir/B16-058/shared
+	RUNLOC=/jumbo/WorkingDir/B16-058/${RUN}/Data/Intensities/BaseCalls
+	XMLLOC=/jumbo/WorkingDir/B16-058/${RUN}
+	SAVELOC=/jumbo/WorkingDir/B16-058/shared
+	cp -R ${M2776}/${RUN} /jumbo/WorkingDir/B16-058/
 	cp /jumbo/WorkingDir/B16-058/bin/Miseq_0mm.pl $RUNLOC
 
 	#-------------------RUN Miseq_0mm.pl---------------------->
 
+	cd $RUNLOC
 	$RUNLOC/Miseq_0mm.pl $RUN EM
 
 	#-------------------SEND MAIL AND REMOVE TEMPORARY FILES------------>
@@ -216,18 +220,20 @@ then
 	
 
 	#Save location of resultfiles to string
-        MAILNOTE=$(echo "Your run: $RUN seem to have been demultiplexed and QC:d succesfully. Find results at: ${RUNLOC}")
+        MAILNOTE=$(echo "Your run: $RUN seem to have been demultiplexed and QC:d succesfully. Find results at: ${SAVELOC}")
 	
 	#Check if analysis completed as planned
-	COMPLETECHECK=$(grep -e "\[all\]" ${RUNLOC}/${RUN}.cero.log | grep -e "INFO:" | grep -e "all completed successfully" | wc -l)
-	if [ $COMPLETECHECK = 0 ] ;
+	COUNTFASTQ=$(ls $RUNLOC/Fastq_1mm | grep -e "fastq.gz" | grep -v "Undetermined" | wc -l | cut -d" " -f1)
+	COMPLETECHECK=$(ls $RUNLOC/Fastqc_0mm | grep -e "fastqc.html" | wc -l | cut -d" " -f1)
+	if [ $COUNTFASTQ != $COMPLETECHECK ] ;
 	then
 		MAILNOTE=$(echo "Demultiplexing and QC of $RUN seem to have failed. See attached log-file")
 		muttMail "${EXPERIMENT_NAME}" "${RUNLOC}/${RUN}.cero.log" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"
 	else
-		muttMail "${EXPERIMENT_NAME}" "${RUNLOC}/${RUN}.xlsx" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"
+		muttMail "${EXPERIMENT_NAME}" "${XMLLOC}/${RUN}.xlsx" "${EMAIL_ADDRESS}" "${MAILNOTE}" "${STATUSCHECK}" "${INVESTIGATOR_NAME}"
 	        checkExit $? "muttMail sent to ${INVESTIGATOR_NAME} regarding experiment: ${EXPERIMENT_NAME}"
-		mv ${RUNLOC}/${RUN}.cero.* /jumbo/WorkingDir/B16-058/shared/logs
+		mv ${RUNLOC}/${RUN}.cero.* /jumbo/WorkingDir/B16-058/logs
+		mv /jumbo/WorkingDir/B16-058/$RUN $SAVELOC
 	fi
 
 	done
