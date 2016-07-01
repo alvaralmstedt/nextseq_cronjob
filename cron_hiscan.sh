@@ -16,16 +16,16 @@ fi
 }
 
 sendMail() {
-    EMAIL=$"""From: \"Miseq2776\" <Miseq2776.noreply@medair.sahlgrenska.gu.se>
+    EMAIL=$"""From: \"HiSec\" <HiSec.noreply@medair.sahlgrenska.gu.se>
 To: \"$1\" <$2>
-Subject: Your Sequencing job $3 has finished!
+Subject: Your job $3 has been transferred!
 MIME-Version: 1.0
 Content-Type: text/plain
  
 $4
 
 Script-run of $3 finished at `date`
-Your sequencing run was completed at: $5
+The transfer was completed at: $5
 
 """
     #Send email
@@ -45,6 +45,8 @@ muttMail () {
 echo "$MAIL" | mutt -s "$1" -e "my_hdr From: HiScan <HiScan.noreply@medair.sahlgrenska.gu.se>" -a $2 -- "$6 <$3>"
 
 }
+
+EMAIL_ADDRESS="alvar.almstedt@gu.se"
 
 #Format the date output
 DATE=$(date | sed 's/ /_/g' | sed 's/:/_/'g | cut -d"_" -f-6)
@@ -77,7 +79,6 @@ then
 	checkExit $? "rm1"
 	COUNTDIFF=1
 	
-
 	#For every new directory in the new filelist
 	for i in $(seq 1 $DIFFERENCES) ; do
 	    RUN=$(sed "${COUNTDIFF}q;d" ${TMP_LOC}/differences_$DATE | cut -d"/" -f4)
@@ -94,7 +95,19 @@ then
     checkExit $? "While dirsize check ${RUN}"
 
     RUNLOC=/jumbo/WorkingDir/${RUN}/shared
-    cp -R ${HISCAN}/${RUN} ${RUNLOC}
-    checkExit ? "cp -R to $RUNLOC"
+    mkdir ${RUNLOC}/hiscanrun_$DATE
+    DESTINATION=${RUNLOC}/hiscanrun_$DATE
+    cp -R ${HISCAN}/${RUN} $DESTINATION
+    checkExit ? "cp -R to $RUNLOC/hiscanrun_$DATE"
+    sendMail "Admin" "$EMAIL_ADDRESS" "${RUN}" "Completed" "$DATE"
+    checkExit ? "sendMail to $EMAIL_ADDRESS"
     done
 fi
+
+#Remove differences file
+rm ${TMP_LOC}/differences_$DATE
+checkExit $? "rm_differences"
+
+#Keep log filesize in check
+echo "`tail -100000 /jumbo/apps/misc-scripts/hiscan_cronjob/cron_hiscantransfers.log`" > /jumbo/apps/misc-scripts/hiscan_cronjob/cron_hiscantransfers.log
+checkExit $? "tail logfile"
